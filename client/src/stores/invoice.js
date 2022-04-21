@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-const baseUrl = 'https://iproject-4kicks.herokuapp.com/'
+const baseUrl = 'http://localhost:3000/'
 export const useInvoiceStore = defineStore({
     id: 'invoice',
     state: () => ({

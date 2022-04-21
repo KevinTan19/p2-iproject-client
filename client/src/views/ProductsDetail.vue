@@ -4,13 +4,15 @@ import { mapActions, mapState } from "pinia";
 import { useProductsStore } from "@/stores/product";
 import { useInvoiceStore } from "@/stores/invoice";
 import ThreeComponent from "../components/ThreeComponent.vue";
+import axios from "axios";
+const baseUrl = "http://localhost:3000/";
 export default {
   data() {
     return {
       itemName: "",
       price: "",
       size: "",
-      quantity: "",
+      quantity: null,
     };
   },
   computed: {
@@ -26,19 +28,41 @@ export default {
   methods: {
     ...mapActions(useProductsStore, ["fetchProductDetail"]),
     ...mapActions(useInvoiceStore, ["createInvoice"]),
-    submitInvoiceEvent() {
-      let obj = {
-        itemName: this.productDetail.name,
-        price: +this.productDetail.retailPrice * 14000,
-        size: this.size,
-        quantity: this.quantity,
-      };
-      const response = this.createInvoice({
-        itemName: this.productDetail.name,
-        price: +this.productDetail.retailPrice * 14000,
-        size: this.size,
-        quantity: this.quantity,
-      });
+    async submitInvoiceEvent() {
+      try {
+        let token = "";
+        if (this.quantity) {
+          const { data } = await axios.post(
+            baseUrl + "invoice/payment",
+            {
+              amount: +this.productDetail.retailPrice * 14000 * +this.quantity,
+            },
+            {
+              headers: {
+                access_token: localStorage.getItem("access_token"),
+              },
+            }
+          );
+          token = data.token.token;
+        }
+        let obj = {
+          itemName: this.productDetail.name,
+          price: +this.productDetail.retailPrice * 14000,
+          size: this.size,
+          quantity: this.quantity,
+        };
+
+        await snap.pay(token, {
+          onSuccess: (result) => {
+            this.createInvoice(obj);
+            this.$router.push({
+              path: "/invoice",
+            });
+          },
+        });
+      } catch (err) {
+        console.log(err);
+      }
     },
   },
   props: {},
@@ -51,7 +75,6 @@ export default {
 
 <template>
   <NavBar></NavBar>
-  <p>{{ productDetail }}</p>
   <div class="container-fluid mx-0 px-0 d-flex justify-content-center">
     <div class="product-img">
       <ThreeComponent />
@@ -61,7 +84,7 @@ export default {
       <h1>{{ productDetail.name }}</h1>
       <h5>{{ productDetail.colorway }}</h5>
       <h4 style="text-align: right">{{ idrPrice }}</h4>
-      <form @submit.prevent="submitInvoiceEvent()">
+      <form>
         <select v-model="size" name="size" class="form-control">
           <option disabled selected value>Select Size</option>
           <option value="40">40</option>
@@ -80,7 +103,14 @@ export default {
           <option value="5">5</option>
         </select>
         <div class="text-center my-4">
-          <button class="btn btn-dark" value="submit">Buy</button>
+          <button
+            id="pay-button"
+            class="btn btn-dark"
+            @click.prevent="submitInvoiceEvent()"
+          >
+            Pay!
+          </button>
+          <!-- <button class="btn btn-dark" value="submit">Buy</button> -->
         </div>
       </form>
     </div>

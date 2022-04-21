@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-const baseUrl = 'https://iproject-4kicks.herokuapp.com/'
+const baseUrl = 'http://localhost:3000/'
 export const useProductsStore = defineStore({
     id: 'products',
     state: () => ({
@@ -32,8 +32,6 @@ export const useProductsStore = defineStore({
                     console.log('masuk')
                     url += `&query=${brands}`
                 }
-                console.log(brands)
-                console.log(url)
                 const { data } = await axios.get(url)
                 this.products = data
             } catch (err) {
@@ -45,8 +43,8 @@ export const useProductsStore = defineStore({
             console.log('is loading true')
             try {
                 const { data } = await axios.get(baseUrl + `products/sneakers/${id}`)
-                this.productDetail = data[0]
-                this.imageBox = data[0].image.original
+                this.productDetail = data
+                this.imageBox = data.image.original
                     // console.log(data[0].image.original)
                 console.log('success')
             } catch (err) {
