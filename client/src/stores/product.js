@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-const baseUrl = 'http://localhost:3000/'
+const baseUrl = 'https://iproject-4k.herokuapp.com/'
 export const useProductsStore = defineStore({
     id: 'products',
     state: () => ({

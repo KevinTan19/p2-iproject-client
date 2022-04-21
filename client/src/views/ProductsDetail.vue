@@ -5,7 +5,7 @@ import { useProductsStore } from "@/stores/product";
 import { useInvoiceStore } from "@/stores/invoice";
 import ThreeComponent from "../components/ThreeComponent.vue";
 import axios from "axios";
-const baseUrl = "http://localhost:3000/";
+const baseUrl = "https://iproject-4k.herokuapp.com/";
 export default {
   data() {
     return {

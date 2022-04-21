@@ -9,6 +9,11 @@ export default {
       name: "",
     };
   },
+  created() {
+    if (localStorage.getItem("access_token")) {
+      this.isLogin = true;
+    }
+  },
   computed: {
     ...mapWritableState(useInvoiceStore, ["invoices"]),
     ...mapWritableState(useUserStore, ["isLogin"]),
